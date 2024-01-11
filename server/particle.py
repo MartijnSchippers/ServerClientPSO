@@ -61,7 +61,8 @@ class Particle:
         self.id = id
         self.current_fitness = float('inf')
         self.state = State.UNSOLVED
-        self.nr_runs = 15
+        settings = json.load(open('settings.json'))
+        self.nr_runs = settings["nr_noise_eval_runs"]
         self.runs = [ParticleRun(i) for i in range(self.nr_runs)]
 
 
@@ -74,12 +75,12 @@ class Particle:
         for run in self.runs:
             if run.is_unsolved():
                 run.set_state_to_in_progress()
-                return self.__return_parameters(generation, run.id)
+                return self._return_parameters(generation, run.id)
             
         # all runs are (being) solved, so return a run that is already being requested
         for run in self.runs:
             if run.is_in_progress():
-                return self.__return_parameters(generation, run.id)
+                return self._return_parameters(generation, run.id)
             
         # return an error instead
         return "there is an error: all runs of this particle already have been calculated, but the state of this particle is not updated"
@@ -101,25 +102,22 @@ class Particle:
                     break
             
             # check if all runs have been solved
-            if self.__all_runs_have_been_calculated():
+            if self._all_runs_have_been_calculated():
                 print("done for particle with id: ", self.id)
                 # update fitness value this particle
-                self.current_fitness = self.__get_avg_fitness_value()
-
-                # set state of this particle to be solved
-                self.state == State.SOLVED
+                self.current_fitness = self._get_avg_fitness_value()
 
                 # update personal best if applied
                 if fit_val < self.current_fitness:
                     self.pb = Position(self.pos.rw_mean, self.pos.rw_variance, self.pos.tao, self.pos.u_plus, self.pos.p_c, self.pos.fill_ratio)
                 
                 #update velocity
-                self.pos.rw_mean_vel += self.__update_variable(self.pos.rw_mean_vel, self.pos.rw_mean, self.pb.rw_mean, gb["rw_mean"])
-                self.pos.rw_variance_vel += self.__update_variable(self.pos.rw_variance_vel, self.pos.rw_variance, self.pb.rw_variance, gb["rw_variance"])
-                self.pos.tao_vel += self.__update_variable(self.pos.tao_vel, self.pos.tao, self.pb.tao, gb["tao"])
-                self.pos.u_plus_vel += self.__update_variable(self.pos.u_plus_vel, self.pos.u_plus, self.pb.u_plus, gb["u_plus"])
-                self.pos.p_c_vel = self.__update_variable(self.pos.p_c_vel, self.pos.p_c, self.pb.p_c, gb["p_c"])
-                self.pos.fill_ratio_vel += self.__update_variable(self.pos.fill_ratio_vel, self.pos.fill_ratio, self.pb.fill_ratio, gb["fill_ratio"])
+                self.pos.rw_mean_vel += self._update_variable(self.pos.rw_mean_vel, self.pos.rw_mean, self.pb.rw_mean, gb["rw_mean"])
+                self.pos.rw_variance_vel += self._update_variable(self.pos.rw_variance_vel, self.pos.rw_variance, self.pb.rw_variance, gb["rw_variance"])
+                self.pos.tao_vel += self._update_variable(self.pos.tao_vel, self.pos.tao, self.pb.tao, gb["tao"])
+                self.pos.u_plus_vel += self._update_variable(self.pos.u_plus_vel, self.pos.u_plus, self.pb.u_plus, gb["u_plus"])
+                self.pos.p_c_vel = self._update_variable(self.pos.p_c_vel, self.pos.p_c, self.pb.p_c, gb["p_c"])
+                self.pos.fill_ratio_vel += self._update_variable(self.pos.fill_ratio_vel, self.pos.fill_ratio, self.pb.fill_ratio, gb["fill_ratio"])
                 
                 # set fitness value to up to date
                 self.state = State.SOLVED
@@ -144,25 +142,29 @@ class Particle:
         self.state = State.UNSOLVED
         self.runs = [ParticleRun(i) for i in range(self.nr_runs)]
 
-    def __return_parameters(self, generation, run_id):
+    def _return_parameters(self, generation, run_id):
         return json.dumps({"particle_id": self.id, "generation": generation, "run_id": run_id} | self.pos.get_values())
     
-    def __get_avg_fitness_value(self):
+    def _get_avg_fitness_value(self):
         run_values = []
         for run in self.runs:
             run_values.append(run.answer)
         return mean(run_values)
     
-    def __all_runs_have_been_calculated(self):
+    def _all_runs_have_been_calculated(self):
         for run in self.runs:
             if not run.is_solved():
                 return False
         return True
     
-    def __update_variable(self, old_vel, old_value, personal_best, global_best):
-        PSO_W = -0.1832 # PSO Parameters
-        PSO_PW = 0.5287
-        PSO_NW = 3.1913
+    def _update_variable(self, old_vel, old_value, personal_best, global_best):
+        # PSO_W = -0.1832 # PSO Parameters
+        # PSO_PW = 0.5287
+        # PSO_NW = 3.1913
+
+        PSO_W = 0.8 # PSO Parameters
+        PSO_PW = 0.1
+        PSO_NW = 0.1
 
         r1 = random.random()
         r2 = random.random()

@@ -40,7 +40,7 @@ class PSO:
         print(f"GENERATION {self.generation_nr} is completed!")
         
         # reset particles and get new global best
-        print(f"starting generation {self.generation_nr}")
+        print(f"starting generation {self.generation_nr + 1}")
         
         for particle in self.particles:
             particle.reset()
