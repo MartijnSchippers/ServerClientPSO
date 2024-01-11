@@ -3,7 +3,7 @@ from particle import Particle, Position, State
 import random
 
 class PSO:
-    nr_particles = 5
+    nr_particles = 10
     generation_nr = 0
     max_generations = 10
     particles : np.array
