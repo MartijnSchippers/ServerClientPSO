@@ -34,6 +34,7 @@ class RosenbrockParticle(Particle):
         self.pb = self.pos
         self.id = id
         self.current_fitness = float('inf')
+        self.pb_fitness = self.current_fitness
         self.state = State.UNSOLVED
         settings = json.load(open('settings.json'))
         self.nr_runs = settings["nr_noise_eval_runs"]
@@ -57,8 +58,10 @@ class RosenbrockParticle(Particle):
                 self.current_fitness = self._get_avg_fitness_value()
 
                 # update personal best if applied
-                if fit_val < self.current_fitness:
+                # TODO: make this right in the Webots PSO!!!!!
+                if fit_val < self.pb_fitness:
                     self.pb = self.pos
+                    self.pb_fitness = fit_val
                 
                 #update velocity_update_variable(self, old_vel, old_value, personal_best, global_best)
                 self.pos.vel_x = self._update_variable(self.pos.vel_x, self.pos.x, self.pb.x, gb["x"])
@@ -73,7 +76,11 @@ class RosenbrockParticle(Particle):
         self.history_fitness.append(self.current_fitness)
         with open("results.json", 'r') as f:
             values = json.load(f)
-            values["results"][self.id].append(self.current_fitness)
+            values[self.id]["fitness"].append(self.current_fitness)
+            values[self.id]["x"].append(self.pos.x)
+            values[self.id]["y"].append(self.pos.y)
+            values[self.id]["pb"].append(self.pb_fitness)
+
 
         with open("results.json", 'w') as f:
             f.write(json.dumps(values, indent = 2))

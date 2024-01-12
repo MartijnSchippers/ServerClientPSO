@@ -1,5 +1,7 @@
 import json
 import matplotlib.pyplot as plt
+import statistics
+
 from random import randint
 
 plt.rcParams.update({
@@ -65,21 +67,68 @@ json_file_path = 'results.json'
 # Load data from the JSON file
 data = load_data_from_json(json_file_path)
 
-# Extracting x-axis values (assuming both lists have the same length)
-x_values = list(range(1, len(data["results"][0]) + 1))
+# TODO: make average fitness value graph, average personal best and global best
+# get average fitness score, per generation
+nr_particles = len(data)
+nr_generations = len(data[0]["fitness"])
+avg_fitness = []
+def get_average(gen_nr, nr_particles, keyword):
+    sum = 0.0
+    for particle in data:
+        sum += particle[keyword][gen_nr]
+    return sum / nr_particles
 
-# Plotting the data
-nr_rows = len(data["results"])
-for i in range(0, nr_rows):
-    plt.plot(x_values, data["results"][i], label=f'Particle {i + 1}')
+def get_std_var(gen_nr, keyword = "fitness"):
+    numbers = []
+    for particle in data:
+        numbers.append(particle[keyword][gen_nr])
+    return statistics.pstdev(numbers)
 
-# Adding labels and title
+x_axis_values = [x for x in range(1, nr_generations + 1)]
+avg_fit_val = []
+avg_pb_val = []
+std_var = []
+avg_x_values = []
+avg_y_values = []
+std_x = []
+std_y = []
+for gen_nr in range(0, nr_generations):
+    avg_fit_val.append(get_average(gen_nr, nr_particles, "fitness"))
+    avg_pb_val.append(get_average(gen_nr, nr_particles, "pb"))
+    std_var.append(get_std_var(gen_nr))
+    avg_x_values.append(get_average(gen_nr, nr_particles, "x"))
+    avg_y_values.append(get_average(gen_nr, nr_particles, "y"))
+    std_x.append(get_std_var(gen_nr, keyword = "x"))
+    std_y.append(get_std_var(gen_nr, keyword = "y"))
+
+# plot 
+# average fitness value
+plt.plot(x_axis_values, avg_fit_val, label=f'Average fitness value', color = colors[0], linestyle = line_styles[0], marker=line_markers[0])
+# average pb value
+plt.plot(x_axis_values, avg_pb_val, label=f'Average personal best value', color = colors[1], linestyle = line_styles[1], marker=line_markers[1])
+# standard deviation per generation
+plt.plot(x_axis_values, std_var, label=f'Standard deviation', color = colors[2], linestyle = line_styles[2], marker=line_markers[2])
 plt.xlabel('Generation')
 plt.ylabel('Fitness value')
-plt.title('Fitness values over time')
-
-# Adding legend
+plt.title('fitness values for 10 generations')
 plt.legend()
+plt.show()
 
-# Display the graph
+# average value parameters x and y
+plt.plot(x_axis_values, avg_x_values, label=f'x', color = colors[0], linestyle = line_styles[0], marker=line_markers[0])
+plt.plot(x_axis_values, avg_y_values, label='y', color = colors[1], linestyle = line_styles[1], marker=line_markers[1])
+plt.axhline(y = 1, color = 'r', label = 'optimal value')
+plt.xlabel('Generation')
+plt.ylabel('value')
+plt.title('parameter values for 10 particles')
+plt.legend()
+plt.show()
+
+# standard deviation parameters x and y
+plt.plot(x_axis_values,std_x, label=f'x', color = colors[0], linestyle = line_styles[0], marker=line_markers[0])
+plt.plot(x_axis_values, std_y, label='y', color = colors[1], linestyle = line_styles[1], marker=line_markers[1])
+plt.xlabel('Generation')
+plt.ylabel('value')
+plt.title('standard deviation')
+plt.legend()
 plt.show()
