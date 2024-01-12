@@ -71,6 +71,14 @@ class RosenbrockParticle(Particle):
     def reset(self):
         # update position
         self.history_fitness.append(self.current_fitness)
+        with open("results.json", 'r') as f:
+            values = json.load(f)
+            values["results"][self.id].append(self.current_fitness)
+
+        with open("results.json", 'w') as f:
+            f.write(json.dumps(values, indent = 2))
+            f.close()
+        
         self.pos.x += self.pos.vel_x
         self.pos.y += self.pos.vel_y
 
