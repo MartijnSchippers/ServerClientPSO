@@ -13,11 +13,11 @@ plt.rcParams.update({
     # "text.usetex": True
     "font.family": "serif",  # Use a serif font
     "font.size": 10,  # Font size typically 10pt in IEEE papers
-    "axes.labelsize": 8,  # Label font size
-    "axes.titlesize": 8,  # Title font size
-    "legend.fontsize": 8,  # Legend font size
-    "xtick.labelsize": 8,  # X-axis tick font size
-    "ytick.labelsize": 8,  # Y-axis tick font size
+    "axes.labelsize": 10,  # Label font size
+    "axes.titlesize": 10,  # Title font size
+    "legend.fontsize": 10,  # Legend font size
+    "xtick.labelsize": 10,  # X-axis tick font size
+    "ytick.labelsize": 10,  # Y-axis tick font size
     "lines.linewidth": 1.5,  # Line width
     "lines.markersize": 3,  # Marker size
     "figure.figsize": (3.39, 2.54),  # Figure size in inches (single column)
@@ -67,7 +67,7 @@ def load_data_from_json(file_path):
     return data
 
 # Example data file path
-json_file_path = 'results.json'
+json_file_path = 'results_rosenbrock.json'
 
 # Load data from the JSON file
 data = load_data_from_json(json_file_path)
@@ -119,6 +119,7 @@ plt.xlabel('Generation')
 plt.ylabel('Fitness value')
 plt.title('fitness values for 10 generations')
 plt.legend()
+plt.tight_layout()
 plt.show()
 
 # average value parameters x and y
@@ -130,6 +131,7 @@ plt.xlabel('Generation')
 plt.ylabel('value')
 plt.title('parameter values for 10 particles')
 plt.legend()
+plt.tight_layout()
 plt.show()
 
 # standard deviation parameters x and y
@@ -140,4 +142,5 @@ plt.xlabel('Generation')
 plt.ylabel('value')
 plt.title('standard deviation')
 plt.legend()
+plt.tight_layout()
 plt.show()

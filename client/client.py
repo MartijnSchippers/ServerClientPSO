@@ -1,6 +1,7 @@
 import requests
 import json
 import math
+import os
 import subprocess
 
 from random import gauss
@@ -30,9 +31,10 @@ class Client():
                 self.particle_id = self.current_parameters["particle_id"]
                 self.particle_generation = self.current_parameters["generation"]
                 self.run_id = self.current_parameters["run_id"]
+                nr_robots = self.current_parameters["nr_robots"]
 
                 # create an arena
-                self.__create_arena()
+                self.__create_arena(nr_robots)
 
                 # do a calculation
                 answer = self.__do_calculation()
@@ -43,33 +45,37 @@ class Client():
             else:
                 break
 
-    def __create_arena(self):
-        wg = WorldGenerator(fill_ratio = 0.48, instance_id=self.local_id)
+    def __create_arena(self, nr_robots):
+        wg = WorldGenerator(fill_ratio = 0.48, instance_id=self.run_id, robot_number=nr_robots)
         wg.createWorld()
 
     def __do_calculation(self):
         # make parameters.json and put them on the right place
         values = {
-            "alpha" : 10,
-            "beta": 10,
             "rw_mean" : self.current_parameters["rw_mean"],
             "rw_variance": self.current_parameters["rw_variance"],
             "tao": self.current_parameters["tao"],
             "u_plus": self.current_parameters["u_plus"],
             "p_c": self.current_parameters["p_c"],
             "report_data" : False,
-            "nr_robots" : 4
+            "nr_robots" : self.current_parameters["nr_robots"]
         }
-        
-        with open("C:/Users/marti/OneDrive/Documenten/IEM/IP/project/demo/controllers/bayesV2/parameters_" + str(self.local_id) + ".json", 'w') as para_file:
+        demo_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "../../")
+        controller_path = os.path.join(demo_path, "controllers/")
+        with open(controller_path + "bayesV2/parameters_" + str(self.local_id) + ".json", 'w') as para_file:
             json.dump(values, para_file)
 
         # launch webots
-        subprocess.run("c:/Program Files/Webots/msys64/mingw64/bin/webots.exe --mode=fast --no-rendering C:/Users/marti/OneDrive/Documenten/IEM/IP/project/demo/worlds/bayes_pso_0_" + str(self.local_id) + ".wbt")
+        # worlds_path = os.path.join(demo_path, "worlds")
+        command = ["webots", "--mode=fast", "--no-rendering", demo_path + "worlds/bayes_pso_0_" + str(0) + ".wbt"]
+
+        # Use subprocess.run with the list of strings
+        subprocess.run(command)
 
         # return answer of supervisor, otherwise, return an error
+        
         try:
-            with open('C:/Users/marti/OneDrive/Documenten/IEM/IP/project/demo/controllers/cpp_supervisor/local_fitness_' + str(self.local_id) + '.txt', 'r') as file:
+            with open(controller_path + 'cpp_supervisor/local_fitness_' + str(self.local_id) + '.txt', 'r') as file:
                 # Do something with the file, such as reading its content
                 fitness_value = file.readline().strip()
                 return float(fitness_value)

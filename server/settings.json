@@ -1,5 +1,5 @@
 {
     "nr_particles": 10,
-    "nr_generations": 25,
+    "nr_generations": 30,
     "nr_noise_eval_runs": 1
 }

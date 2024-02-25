@@ -46,10 +46,15 @@ class WorldGenerator():
 
     def createArena(self):
       #Do not use dynamic environment
-      arena = Arena(self.fill_ratio)
-      arena.save("../../project/demo/controllers/bayesV2/world.txt")
+      arena = Arena(self.fill_ratio, tiles=np.array( [[1,0,1,1,0],
+                    [0,1,0,0,1],
+                    [0,1,1,0,0],
+                    [1,0,0,1,1],
+                    [0,1,1,0,0]]))
+      
+      arena.save("../../../demo/controllers/bayesV2/world.txt")
       img = ImageGenerator(arena.map)
-      img.save("../../project/demo/world_generation/world.png")
+      img.save("../../../demo/world_generation/world.png")
 
 
     def createPos(self):
@@ -187,7 +192,7 @@ Wall {
     def createWorld(self):
         random.seed(self.instance_id) 
 
-        file = open(r"../../project/demo/worlds" + self.createTitle() + ".wbt", 'w')
+        file = open(r"../../../demo/worlds" + self.createTitle() + ".wbt", 'w')
         #file = open(r"/usr/local/efs/demo/worlds" + self.createTitle() + ".wbt", 'w')
         #file = open(r"/home/darren/Documents/ICRA_LAUNCH/Rovables_Bayesian_Inspection_Optimization/demo/worlds" + self.createTitle() + ".wbt", 'w')
         #Start with Header
