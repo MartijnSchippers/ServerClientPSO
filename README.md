@@ -1,5 +1,11 @@
+# What is Particle Swarm Optimization
+Particle Swarm Optimization (PSO) is a nature-inspired algorithm developed in the 1990s. It mimics the collective behavior of organisms like bird flocks to solve optimization problems. In PSO, a population of particles moves through a problem space, adjusting positions based on personal best and global best information. The algorithm is simple, easy to implement, and effective for various optimization tasks, making it popular in fields such as engineering design and data clustering (source: ChatGPT).
+
+## This project divides computing power between clients
+For this project, a mathematical problem that (could potentially be a computationally expensive operation), implements the PSO method by giving the command of a calculation, to a client. In other words, the server gets a request from a computer "I want to do a calculation", then the server responds with "OK, here is a set of problems to solve: {x = 2, y = 2}". THen, the client computes the answer by putting it into the equation and returns "4" (for example). 
+
 # How to use the server-client PSO method
-![alt text](/demo/server-client/images/Server-Client%20illustration.png)
+**Important: all functions related to Webots cannot be used** (they belong to another project). The RosenBrock function, however, is.
 
  ## Start up server
 First, indicate the settings (number of runs, number of particles, etc.) in the file 'settings.json'. To start up the server, open the 'server' folder in a terminal, and run "flask run" (to be accessible from the device) or "flask run --host=0.0.0.0" (to be accessible from the local network). It will display information about the ip address and port it is on.
